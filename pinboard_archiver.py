@@ -10,9 +10,16 @@ import pika  # type: ignore
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
+# pika is too verbose
+logging.getLogger("pika.adapters").setLevel(logging.ERROR)
+
 
 def callback(ch, method, properties, body):
-    log.info(" [x] Received %r" % body)
+    log.info(
+        "Received message",
+        extra={"message_id": properties.message_id},
+    )
+    log.debug("Received message", extra={"body": body})
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
