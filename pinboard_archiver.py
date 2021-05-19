@@ -12,9 +12,6 @@ import pika  # type: ignore
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
-# pika is too verbose
-logging.getLogger("pika.adapters").setLevel(logging.ERROR)
-
 pinboard_post_schema = os.path.dirname(__file__) + "/pinboard_post.capnp"
 pinboard_post = capnp.load(pinboard_post_schema)
 
