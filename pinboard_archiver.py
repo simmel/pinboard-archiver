@@ -2,8 +2,10 @@ __version__ = "0.1.0"
 
 
 import logging
+import os
 import typing
 
+import capnp  # type: ignore
 import click
 import pika  # type: ignore
 
@@ -13,6 +15,9 @@ log = logging.getLogger(__name__)
 # pika is too verbose
 logging.getLogger("pika.adapters").setLevel(logging.ERROR)
 
+pinboard_post_schema = os.path.dirname(__file__) + "/pinboard_post.capnp"
+pinboard_post = capnp.load(pinboard_post_schema)
+
 
 def callback(ch, method, properties, body):
     log.info(
@@ -20,6 +25,10 @@ def callback(ch, method, properties, body):
         extra={"message_id": properties.message_id},
     )
     log.debug("Received message", extra={"body": body})
+
+    post = pinboard_post.PinboardPost.from_bytes(body)
+    log.debug("Deserialized message", extra={"post": body})
+
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
