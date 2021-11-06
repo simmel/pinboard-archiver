@@ -1,5 +1,7 @@
-__version__ = "0.1.0"
-
+try:
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:
+    import importlib_metadata  # type: ignore
 
 import logging
 import os
@@ -9,8 +11,11 @@ import capnp  # type: ignore
 import click
 import pika  # type: ignore
 
+package_name = __spec__.name  # type: ignore
+__version__ = importlib_metadata.version(package_name)
+
 logging.basicConfig(level=logging.INFO)
-log = logging.getLogger(__name__)
+log = logging.getLogger(package_name)
 
 pinboard_post_schema = os.path.dirname(__file__) + "/pinboard_post.capnp"
 pinboard_post = capnp.load(pinboard_post_schema)
@@ -29,6 +34,7 @@ def callback(ch, method, properties, body):
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
+@click.version_option()
 @click.command()
 @click.option(
     "--amqp-url",
