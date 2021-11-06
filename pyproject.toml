@@ -3,6 +3,7 @@ name = "pinboard-archiver"
 version = "0.1.0"
 description = "Consumer which archives links send to Pinboard"
 authors = ["Simon Lundström <github-commits@soy.se>"]
+homepage = "https://github.com/simmel/pinboard-archiver"
 
 [tool.poetry.dependencies]
 python = "^3.7"
