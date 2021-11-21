@@ -25,6 +25,8 @@ pinboard-archiver = 'pinboard_archiver:main'
     [tool.pylint.master]
     disable= [
         'missing-docstring',
+        'consider-using-f-string',
+        'W',
         ]
 
     output-format = 'parseable'

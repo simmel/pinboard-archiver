@@ -5,7 +5,6 @@ except ModuleNotFoundError:
 
 import logging
 import os
-import typing
 import urllib.parse
 import urllib.request
 
@@ -24,7 +23,7 @@ pinboard_post_schema = os.path.dirname(__file__) + "/pinboard_post.capnp"
 pinboard_post = capnp.load(pinboard_post_schema)
 
 
-def callback(ch, method, properties, body, opener):
+def callback(channel, method, properties, body, opener):
     log.info(
         "Received message",
         extra={"message_id": properties.message_id},
@@ -35,7 +34,7 @@ def callback(ch, method, properties, body, opener):
     log.debug("Deserialized message", extra={"post": body})
     httpbin(opener=opener, url=post.href)
 
-    ch.basic_ack(delivery_tag=method.delivery_tag)
+    channel.basic_ack(delivery_tag=method.delivery_tag)
 
 
 def httpbin(*, opener, url):
@@ -93,4 +92,4 @@ def main(*, amqp_url: str):
     connection.close()
 
 
-main(auto_envvar_prefix="PINQUE")
+main(auto_envvar_prefix="PINQUE")  # pylint: disable=unexpected-keyword-arg,missing-kwoa
