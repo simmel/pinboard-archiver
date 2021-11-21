@@ -5,9 +5,12 @@ except ModuleNotFoundError:
 
 import logging
 import os
+import urllib.error
 import urllib.parse
 import urllib.request
 
+# FIXME https://github.com/litl/backoff/issues/104
+import backoff  # type: ignore
 import capnp  # type: ignore
 import click
 import pika  # type: ignore
@@ -23,6 +26,13 @@ pinboard_post_schema = os.path.dirname(__file__) + "/pinboard_post.capnp"
 pinboard_post = capnp.load(pinboard_post_schema)
 
 
+def fatal_code(ex):
+    fatal = True
+    if ex.code < 400 or ex.code == 429:
+        fatal = False
+    return fatal
+
+
 def callback(channel, method, properties, body, opener):
     log.info(
         "Received message",
@@ -32,11 +42,23 @@ def callback(channel, method, properties, body, opener):
 
     post = pinboard_post.PinboardPost.from_bytes(body)
     log.debug("Deserialized message", extra={"post": body})
-    httpbin(opener=opener, url=post.href)
+    try:
+        httpbin(opener=opener, url=post.href)
+    except urllib.error.HTTPError:
+        log.exception("Error when archiving, DLQ:ing", extra={"post": body})
+        channel.basic_nack(delivery_tag=method.delivery_tag)
+    else:
+        channel.basic_ack(delivery_tag=method.delivery_tag)
 
-    channel.basic_ack(delivery_tag=method.delivery_tag)
 
-
+@backoff.on_exception(
+    backoff.expo,
+    urllib.error.HTTPError,
+    factor=300,
+    max_tries=3,
+    jitter=None,
+    giveup=fatal_code,
+)
 def httpbin(*, opener, url):
     data = urllib.parse.urlencode({"url": url})
     data = data.encode("ascii")
