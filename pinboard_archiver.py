@@ -52,9 +52,9 @@ def callback(channel, method, properties, body, opener):
 
 
 @backoff.on_exception(
-    backoff.expo,
+    backoff.constant,
     urllib.error.HTTPError,
-    factor=300,
+    interval=300,
     max_tries=3,
     jitter=None,
     giveup=fatal_code,
