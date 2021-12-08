@@ -3,6 +3,7 @@ try:
 except ModuleNotFoundError:
     import importlib_metadata  # type: ignore
 
+import json
 import logging
 import os
 import urllib.error
@@ -43,7 +44,7 @@ def callback(channel, method, properties, body, opener):
     post = pinboard_post.PinboardPost.from_bytes(body)
     log.debug("Deserialized message", extra={"post": body})
     try:
-        httpbin(opener=opener, url=post.href)
+        archiveorg(opener=opener, url=post.href)
     except urllib.error.HTTPError:
         log.exception("Error when archiving, DLQ:ing", extra={"post": body})
         channel.basic_nack(delivery_tag=method.delivery_tag)
@@ -58,12 +59,45 @@ def callback(channel, method, properties, body, opener):
     max_tries=3,
     jitter=None,
     giveup=fatal_code,
-)
-def httpbin(*, opener, url):
-    data = urllib.parse.urlencode({"url": url})
+)  # pylint: disable=inconsistent-return-statements
+def archiveorg(*, opener, url):
+    if already_archiveorg(opener=opener, url=url):
+        return True
+    data = urllib.parse.urlencode({"url": url, "capture_all": "on"})
     data = data.encode("ascii")
-    with opener.open("https://httpbin.org/status/429", data=data, timeout=5) as file:
-        log.info(file.read().decode("utf-8"))
+    with opener.open(
+        "https://web.archive.org/save/%s" % urllib.parse.quote_plus(url),
+        data=data,
+        timeout=5,
+    ) as file:
+        if file.status == 200:
+            log.info("archive.org'd URL", extra={"url": url})
+        else:
+            log.info(
+                "archive.org reported %s for %s", file.status, url, extra={"url": url}
+            )
+
+
+@backoff.on_exception(
+    backoff.constant,
+    urllib.error.HTTPError,
+    interval=300,
+    max_tries=3,
+    jitter=None,
+    giveup=fatal_code,
+)  # pylint: disable=inconsistent-return-statements
+def already_archiveorg(*, opener, url):
+    data = urllib.parse.urlencode({"url": url})
+    with opener.open(
+        "https://archive.org/wayback/available?%s" % data,
+        timeout=5,
+    ) as file:
+        response = file.read().decode("utf-8")
+        archived = json.loads(response)
+        # https://archive.org/help/wayback_api.php
+        if archived.get("archived_snapshots"):
+            log.info("URL already on archive.org", extra={"url": url})
+            return True
 
 
 @click.version_option()
