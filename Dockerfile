@@ -21,7 +21,7 @@ RUN \
 
 ENV PATH=/venv/bin:$PATH
 ENV PYTHONPATH=/venv
-RUN pip -vvv install -U pip
+RUN pip install -U pip poetry-core
 
 USER 1000
 
