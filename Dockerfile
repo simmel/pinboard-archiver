@@ -33,14 +33,3 @@ RUN --mount=type=cache,uid=1000,target=/home/.cache pip install --no-index --fin
 COPY --chown=1000 *.py ./
 RUN --mount=type=cache,uid=1000,target=/home/.cache pip install --no-index --find-links=/home/.cache/packages --target /venv --upgrade .
 RUN false
-
-# Distroless don't currently have version tags
-FROM gcr.io/distroless/python3-root/debian10:debug@sha256:1bc65c2e05156ee7ac2d3819d425591c4ebbc459d57a27c36fba38ea08019fae AS prod
-
-USER 1000
-
-COPY --from=build /venv /venv
-ENV PATH=/venv/bin:$PATH
-ENV PYTHONPATH=/venv
-
-ENTRYPOINT ["python3", "-m", "grafana_consumer"]
