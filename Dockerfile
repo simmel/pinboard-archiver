@@ -23,6 +23,7 @@ ENV PATH=/venv/bin:$PATH
 ENV PYTHONPATH=/venv
 ENV HOME=/home
 
+RUN pip install poetry-core
 USER 1000
 
 COPY poetry.lock pyproject.toml ./
