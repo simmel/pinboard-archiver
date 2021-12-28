@@ -21,9 +21,10 @@ RUN \
 
 ENV PATH=/venv/bin:$PATH
 ENV PYTHONPATH=/venv
+RUN pip -vvv install -U pip
 
 USER 1000
 
 COPY poetry.lock pyproject.toml *.py ./
-RUN pip install --target /venv .
+RUN pip -vvv install --target /venv .
 RUN false
