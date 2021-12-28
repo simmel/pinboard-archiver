@@ -21,10 +21,16 @@ RUN \
 
 ENV PATH=/venv/bin:$PATH
 ENV PYTHONPATH=/venv
+ENV HOME=/home
 RUN pip install -U pip poetry-core
 
 USER 1000
 
-COPY poetry.lock pyproject.toml *.py ./
-RUN pip -vvv install --target /venv .
+COPY poetry.lock pyproject.toml ./
+RUN touch pinboard_archiver.py
+COPY pip.conf /etc/
+RUN --mount=type=cache,uid=1000,target=/home/.cache pip -v download . poetry-core
+RUN --mount=type=cache,uid=1000,target=/home/.cache pip -v install --no-index --find-links=/home/.cache/packages --target /venv .
+COPY --chown=1000 *.py ./
+RUN --mount=type=cache,uid=1000,target=/home/.cache pip -v install --no-index --find-links=/home/.cache/packages --target /venv --upgrade .
 RUN false
