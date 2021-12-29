@@ -149,4 +149,6 @@ def main(*, amqp_url: str):
 
 
 if __name__ == "__main__":
-    main(auto_envvar_prefix="PINQUE")  # pylint: disable=unexpected-keyword-arg,missing-kwoa
+    main(  # pylint: disable=unexpected-keyword-arg,missing-kwoa
+        auto_envvar_prefix="PINQUE"
+    )
