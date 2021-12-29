@@ -30,7 +30,7 @@ jobs:
         path: ~/.cache/pypoetry/virtualenvs
         key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
     - run: poetry install
-    - run: poetry run python3 -m nox
+    - run: poetry run pytest
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
