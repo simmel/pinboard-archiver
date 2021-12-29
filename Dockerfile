@@ -13,11 +13,6 @@ RUN \
     /usr/src \
     /venv \
   ;
-  # && \
-  # chown -R 1000 \
-  #   /home/.cache \
-  #   /usr/src \
-  #   /venv \
 
 ENV PATH=/venv/bin:$PATH
 ENV PYTHONPATH=/venv
