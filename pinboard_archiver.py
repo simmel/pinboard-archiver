@@ -148,4 +148,5 @@ def main(*, amqp_url: str):
     connection.close()
 
 
-main(auto_envvar_prefix="PINQUE")  # pylint: disable=unexpected-keyword-arg,missing-kwoa
+if __name__ == "__main__":
+    main(auto_envvar_prefix="PINQUE")  # pylint: disable=unexpected-keyword-arg,missing-kwoa
