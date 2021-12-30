@@ -17,7 +17,7 @@ import click
 import pika  # type: ignore
 
 package_name = __spec__.name  # type: ignore
-__metadata__ = importlib_metadata.metadata(package_name)
+__metadata__ = importlib_metadata.metadata(package_name)  # type: ignore
 __version__ = __metadata__["Version"]
 
 logging.basicConfig(level=logging.INFO)
