@@ -6,6 +6,7 @@ except ModuleNotFoundError:
 import json
 import logging
 import os
+import socket
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -29,7 +30,7 @@ pinboard_post = capnp.load(pinboard_post_schema)
 
 def fatal_code(ex):
     fatal = True
-    if ex.code < 400 or ex.code == 429:
+    if hasattr(ex, "code") and (ex.code < 400 or ex.code == 429):
         fatal = False
     return fatal
 
@@ -54,7 +55,7 @@ def callback(channel, method, properties, body, opener):
 
 @backoff.on_exception(
     backoff.constant,
-    urllib.error.HTTPError,
+    (urllib.error.HTTPError, socket.timeout),
     interval=300,
     max_tries=3,
     jitter=None,
@@ -80,7 +81,7 @@ def archiveorg(*, opener, url):
 
 @backoff.on_exception(
     backoff.constant,
-    urllib.error.HTTPError,
+    (urllib.error.HTTPError, socket.timeout),
     interval=300,
     max_tries=3,
     jitter=None,
