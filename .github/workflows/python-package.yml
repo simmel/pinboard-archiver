@@ -47,7 +47,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: ${{ secrets.DOCKER_USERNAME }}/pinboard-queue
+          images: ${{ secrets.DOCKER_USERNAME }}/pinboard-archiver
           tags: |
             type=raw,value=latest
             type=semver,pattern={{version}}
