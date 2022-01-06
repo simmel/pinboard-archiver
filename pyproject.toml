@@ -21,7 +21,7 @@ black = "^21.12b0"
 nox = "^2021.10.1"
 
 [tool.poetry.scripts]
-pinboard-archiver = 'pinboard_archiver:main'
+pinboard-archiver = 'pinboard_archiver:cli'
 
 [tool.pylint]
     [tool.pylint.master]

@@ -149,7 +149,11 @@ def main(*, amqp_url: str):
     connection.close()
 
 
-if __name__ == "__main__":
+def cli():
     main(  # pylint: disable=unexpected-keyword-arg,missing-kwoa
         auto_envvar_prefix="PINQUE"
     )
+
+
+if __name__ == "__main__":
+    cli()
