@@ -32,6 +32,8 @@ def fatal_code(ex):
     fatal = True
     if hasattr(ex, "code") and (ex.code < 400 or ex.code == 429):
         fatal = False
+    elif isinstance(ex, socket.timeout) or isinstance(ex, urllib.error.URLError):
+        fatal = False
     return fatal
 
 
@@ -55,7 +57,7 @@ def callback(channel, method, properties, body, opener):
 
 @backoff.on_exception(
     backoff.constant,
-    (urllib.error.HTTPError, socket.timeout),
+    (urllib.error.HTTPError, urllib.error.URLError, socket.timeout),
     interval=300,
     max_tries=3,
     jitter=None,
@@ -81,7 +83,7 @@ def archiveorg(*, opener, url):
 
 @backoff.on_exception(
     backoff.constant,
-    (urllib.error.HTTPError, socket.timeout),
+    (urllib.error.HTTPError, urllib.error.URLError, socket.timeout),
     interval=300,
     max_tries=3,
     jitter=None,
