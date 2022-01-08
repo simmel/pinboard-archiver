@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pinboard-archiver"
-version = "0.3.1"
+version = "0.3.2"
 description = "Consumer which archives links send to Pinboard"
 authors = ["Simon Lundström <github-commits@soy.se>"]
 homepage = "https://github.com/simmel/pinboard-archiver"
