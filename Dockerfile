@@ -1,5 +1,5 @@
-ARG PYTHON_VERSION=3.8
-FROM python:${PYTHON_VERSION}-slim-buster AS build
+ARG PYTHON_VERSION=3.9
+FROM python:${PYTHON_VERSION}-slim-bullseye AS build
 
 WORKDIR /usr/src
 
@@ -28,7 +28,7 @@ COPY --chown=1000 *.py *.capnp ./
 RUN --mount=type=cache,uid=1000,target=/home/.cache pip -v install --no-build-isolation --target /venv --upgrade .
 
 # Distroless don't currently have version tags
-FROM gcr.io/distroless/python3-debian10:debug@sha256:396827c703e8f43f6483d2e723592ea3bfaeafc5d327bcfca9cddaed74ead3cf
+FROM gcr.io/distroless/python3-debian11:debug@sha256:a401f50d892a2d5bf067182f5d1d94f84375d92ea3b50e8ede613d5da2d91d86
 
 COPY --from=build /venv /venv
 ENV PATH=/venv/bin:$PATH
