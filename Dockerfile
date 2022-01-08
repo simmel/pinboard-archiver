@@ -24,7 +24,7 @@ USER 1000
 COPY poetry.lock pyproject.toml ./
 RUN touch pinboard_archiver.py
 RUN --mount=type=cache,uid=1000,target=/home/.cache pip -v install --no-build-isolation --target /venv .
-COPY --chown=1000 *.py ./
+COPY --chown=1000 *.py *.capnp ./
 RUN --mount=type=cache,uid=1000,target=/home/.cache pip -v install --no-build-isolation --target /venv --upgrade .
 
 # Distroless don't currently have version tags
