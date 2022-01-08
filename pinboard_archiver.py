@@ -32,7 +32,7 @@ def fatal_code(ex):
     fatal = True
     if hasattr(ex, "code") and (ex.code < 400 or ex.code == 429):
         fatal = False
-    elif isinstance(ex, socket.timeout) or isinstance(ex, urllib.error.URLError):
+    elif isinstance(ex, (socket.timeout, urllib.error.URLError)):
         fatal = False
     return fatal
 
