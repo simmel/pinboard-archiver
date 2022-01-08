@@ -35,6 +35,6 @@ ENV PATH=/venv/bin:$PATH
 ENV PYTHONPATH=/venv
 
 # Fix shebang
-RUN sed -i -e '1s%^#.*%#!/busybox/env python3%' /venv/bin/*
+RUN sed -i -e "1s%^#.*%#!$(which env) python3%" /venv/bin/*
 
 ENTRYPOINT ["pinboard-archiver"]
