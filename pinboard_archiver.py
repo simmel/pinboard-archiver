@@ -133,6 +133,7 @@ def main(*, amqp_url: str):
         durable=True,
         auto_delete=False,
         arguments={"x-queue-mode": "lazy"},
+        passive=True,
     )
     channel.queue_bind(
         exchange="pinboard",
