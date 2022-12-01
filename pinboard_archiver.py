@@ -45,11 +45,11 @@ def callback(channel, method, properties, body, opener):
     log.debug("Received message", extra={"body": body})
 
     post = pinboard_post.PinboardPost.from_bytes(body)
-    log.debug("Deserialized message", extra={"post": body})
+    log.debug("Deserialized message", extra={"post": post})
     try:
         archiveorg(opener=opener, url=post.href)
     except urllib.error.HTTPError:
-        log.exception("Error when archiving, DLQ:ing", extra={"post": body})
+        log.exception("Error when archiving, DLQ:ing", extra={"post": post})
         channel.basic_nack(delivery_tag=method.delivery_tag)
     else:
         channel.basic_ack(delivery_tag=method.delivery_tag)
