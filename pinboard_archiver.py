@@ -71,7 +71,7 @@ def archiveorg(*, opener, url):
     with opener.open(
         "https://web.archive.org/save/%s" % urllib.parse.quote_plus(url),
         data=data,
-        timeout=10,
+        timeout=30,
     ) as file:
         if file.status == 200:
             log.info("archive.org'd URL", extra={"url": url})
@@ -93,7 +93,7 @@ def already_archiveorg(*, opener, url):
     data = urllib.parse.urlencode({"url": url})
     with opener.open(
         "https://archive.org/wayback/available?%s" % data,
-        timeout=10,
+        timeout=30,
     ) as file:
         response = file.read().decode("utf-8")
         archived = json.loads(response)
